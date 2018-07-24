@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas之炫酷时钟</title>
+    <style>
+        #timeCanvas {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate3d(-50%, -50%, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width='500' height='500' id='timeCanvas'></canvas>
+    <script>
+          var oCanvas = document.getElementById('timeCanvas');
+          var ctx = oCanvas.getContext('2d');
+            ctx.lineWidth = 17;
+            ctx.strokeStyle = 'rgba(0,255,255,1)';
+            ctx.shadowColor = "#fff";
+            ctx.shadowBlur = 18;
+           
+        function createCanvas() {
+          
+            // 时间
+            var date = new Date();
+            //年月日
+            var toDay = date.toDateString();
+            //时分秒毫秒
+            var h = date.getHours();
+            var m = date.getMinutes();
+            var s = date.getSeconds();
+            var ms = date.getMilliseconds();
+            var ks = s + ms / 1000;
+            
+            // 背景(径向渐变)
+            var gradient = ctx.createRadialGradient(250, 250, 5, 250, 250, 300);
+            gradient.addColorStop(0, '#333');
+            gradient.addColorStop(1, '#000');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 500, 500);
+            
+            //画圆弧(钟)
+            // 时 12小时----360 1小时--30
+            ctx.beginPath();
+            ctx.arc(250, 250, 200, fromDeg(270), fromDeg(30 * h - 90));
+            ctx.stroke();
+            
+            //分  60分钟-----360; 1分钟----6
+            ctx.beginPath();
+            ctx.arc(250, 250, 170, fromDeg(270), fromDeg(6 * m  - 90));
+            ctx.stroke();
+            
+            //秒  60s /3600ms----360;1s ----6
+            //为了使动画更加流畅--将ms换算成s,s = s + ms/1000;
+            // 若分和时也要实现流畅-方法同上
+            ctx.beginPath();
+            ctx.arc(250, 250, 140, fromDeg(270), fromDeg(6 * ks - 90));
+            ctx.stroke();
+            
+            //文本填充
+            ctx.beginPath();
+            ctx.font = '26px Arial';
+            ctx.fillStyle = 'rgba(0,255,255,1)';
+            ctx.fillText(toDay, 160, 240);
+            ctx.fillText(full(h) + ':' + full(m) + ':' + full(s) + ':' + ms, 180, 270);
+        }
+
+        setInterval(createCanvas, 40);
+        //角度换算为弧度
+        function fromDeg(deg) {
+            var f = Math.PI / 180;
+            return deg * f;
+        }
+
+        function full(num) {
+            return ('0' + num).slice(-2);
+        }
+    </script>
+</body>
+
+</html>
